@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
-import sys
+import codecs, sys
 from collections import Counter
 
-orig_word = ''.join(sys.argv[1:]).lower()
+orig_word = ''.join(sys.argv[1:]).decode('utf-8').lower()
+print orig_word
 orig_letters = set(orig_word)
-corpus = [word.strip() for word in open('slowa.txt').readlines() if all((letter in orig_letters) for letter in word.strip())]
-print corpus
+corpus = [
+    word.strip() for word in codecs.open('slowa.txt', 'r', encoding='utf8').readlines() \
+        if all((letter in orig_letters) for letter in word.strip())
+]
+for word in corpus:
+    print word
 
 result = []
 
@@ -28,5 +33,9 @@ def search(available_letters, complete_words, uncomplete_word, level):
 
 search(Counter(orig_word), [], '', 0)
 result.sort()
-print result
+for seq in result:
+    for word in seq:
+        print word,
+    print
+
 
