@@ -4,6 +4,10 @@ import codecs, sys
 from bisect import bisect_left
 from collections import Counter
 
+max_word_count = 3
+if len(sys.argv) > 1 and sys.argv[1].isdigit():
+    max_word_count = int(sys.argv[1])
+    sys.argv = sys.argv[1:]
 orig_word = ''.join(sys.argv[1:]).decode('utf-8').lower()
 orig_letters = set(orig_word)
 
@@ -14,13 +18,12 @@ corpus = [
 ]
 print len(corpus), 'words.'
 
-MAX_WORD_COUNT = 3
 
 # level == x  <=>  x letters are already placed when entering the call
 def search(available_letters, complete_words, uncomplete_word, level):
     if level == len(orig_word) and not uncomplete_word:
         yield complete_words
-    elif len(complete_words) < MAX_WORD_COUNT:
+    elif len(complete_words) < max_word_count:
         for letter, count in available_letters.items():
             if count == 0: continue
             new_word = uncomplete_word + letter
@@ -36,7 +39,7 @@ def search(available_letters, complete_words, uncomplete_word, level):
             for i in search(updated_letters, complete_words, new_word, level + 1):
                 yield i
 
-print 'Looking for anagrams, up to', MAX_WORD_COUNT, 'words long...'
+print 'Looking for anagrams, up to', max_word_count, 'words long...'
 for seq in search(Counter(orig_word), [], '', 0):
     print ' '.join(seq)
 
