@@ -4,23 +4,21 @@ import codecs, sys
 from collections import Counter
 
 orig_word = ''.join(sys.argv[1:]).decode('utf-8').lower()
-print orig_word
 orig_letters = set(orig_word)
-corpus = [
+
+print 'Preparing corpus...'
+corpus = set([
     word.strip() for word in codecs.open('slowa.txt', 'r', encoding='utf8').readlines() \
         if all((letter in orig_letters) for letter in word.strip())
-]
-for word in corpus:
-    print word
+])
 
-result = []
+MAX_WORD_COUNT = 3
 
 # level == x  <=>  x letters are already placed when entering the call
 def search(available_letters, complete_words, uncomplete_word, level):
     if level == len(orig_word) and not uncomplete_word:
-        global result
-        result += [complete_words]
-    else:
+        yield complete_words
+    elif len(complete_words) < MAX_WORD_COUNT:
         for (letter, count) in available_letters.items():
             if count == 0: continue
             new_word = uncomplete_word + letter
@@ -28,14 +26,12 @@ def search(available_letters, complete_words, uncomplete_word, level):
             updated_letters = available_letters.copy()
             updated_letters[letter] -= 1
             if new_word in corpus:
-                search(updated_letters, complete_words + [new_word], '', level + 1)
-            search(updated_letters, complete_words, new_word, level + 1)
+                for i in search(updated_letters, complete_words + [new_word], '', level + 1):
+                    yield i
+            for i in search(updated_letters, complete_words, new_word, level + 1):
+                yield i
 
-search(Counter(orig_word), [], '', 0)
-result.sort()
-for seq in result:
-    for word in seq:
-        print word,
-    print
-
+print 'Looking for anagrams...'
+for seq in search(Counter(orig_word), [], '', 0):
+    print ' '.join(seq)
 
