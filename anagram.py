@@ -24,7 +24,7 @@ def search(available_letters, complete_words, uncomplete_word, level):
     if level == len(orig_word) and not uncomplete_word:
         yield complete_words
     elif len(complete_words) < max_word_count:
-        for letter, count in available_letters.items():
+        for letter, count in sorted(available_letters.items()):
             if count == 0: continue
             new_word = uncomplete_word + letter
             if complete_words and new_word < complete_words[-1]: continue
