@@ -4,14 +4,14 @@ import codecs, sys
 from bisect import bisect_left
 from collections import Counter
 
-max_word_count = 3
+max_word_count = 2
 if len(sys.argv) > 1 and sys.argv[1].isdigit():
     max_word_count = int(sys.argv[1])
     sys.argv = sys.argv[1:]
 orig_word = ''.join(sys.argv[1:]).decode('utf-8').lower()
 orig_letters = set(orig_word)
 
-print 'Preparing corpus...',
+print 'Extracting corpus...',
 corpus = [
     word.strip() for word in codecs.open('slowa.txt', 'r', encoding='utf8').readlines() \
         if all((letter in orig_letters) for letter in word.strip())
@@ -40,6 +40,9 @@ def search(available_letters, complete_words, uncomplete_word, level):
                 yield i
 
 print 'Looking for anagrams, up to', max_word_count, 'words long...'
+total = 0
 for seq in search(Counter(orig_word), [], '', 0):
     print ' '.join(seq)
+    total += 1
+print 'Total anagrams found:', total
 
