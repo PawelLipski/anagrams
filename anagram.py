@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import codecs, sys
+import codecs, sys, time
 from bisect import bisect_left
 from collections import Counter
 
@@ -18,9 +18,12 @@ corpus = [
 ]
 print len(corpus), 'words.'
 
+calls = 0
 
 # level == x  <=>  x letters are already placed when entering the call
 def search(available_letters, complete_words, uncomplete_word, level):
+    global calls
+    calls += 1
     if level == len(orig_word) and not uncomplete_word:
         yield complete_words
     elif len(complete_words) < max_word_count:
@@ -40,9 +43,11 @@ def search(available_letters, complete_words, uncomplete_word, level):
                 yield i
 
 print 'Looking for anagrams, up to', max_word_count, 'words long...'
+start = time.clock()
 total = 0
 for seq in search(Counter(orig_word), [], '', 0):
     print ' '.join(seq)
     total += 1
-print 'Total anagrams found:', total
+t = time.clock() - start
+print 'Total anagrams found:', total, 'in', calls, 'calls, in', '%.3f' % t, 'sec,', '%.3f' % (1e6*t/calls), 'us/call'
 
