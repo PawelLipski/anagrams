@@ -31,16 +31,17 @@ def search(available_letters, complete_words, uncomplete_word, level):
             if count == 0: continue
             new_word = uncomplete_word + letter
             if complete_words and new_word < complete_words[-1]: continue
-            updated_letters = available_letters.copy()
-            updated_letters[letter] -= 1
             new_word_index = bisect_left(corpus, new_word)
             if new_word_index == len(corpus): continue
             if not corpus[new_word_index].startswith(new_word): continue
+
+            available_letters[letter] -= 1
             if corpus[new_word_index] == new_word:
-                for i in search(updated_letters, complete_words + [new_word], '', level + 1):
+                for i in search(available_letters, complete_words + [new_word], '', level + 1):
                     yield i
-            for i in search(updated_letters, complete_words, new_word, level + 1):
+            for i in search(available_letters, complete_words, new_word, level + 1):
                 yield i
+            available_letters[letter] += 1
 
 print 'Looking for anagrams, up to', max_word_count, 'words long...'
 start = time.clock()
