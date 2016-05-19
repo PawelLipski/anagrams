@@ -19,10 +19,12 @@ corpus = [
 print len(corpus), 'words.'
 
 calls = 0
+available_letters = Counter(orig_word)
+complete_words = []
 
 # level == x  <=>  x letters are already placed when entering the call
-def search(available_letters, complete_words, uncomplete_word, level):
-    global calls
+def search(uncomplete_word, level):
+    global available_letters, complete_words, calls
     calls += 1
     if level == len(orig_word) and not uncomplete_word:
         yield complete_words
@@ -37,16 +39,18 @@ def search(available_letters, complete_words, uncomplete_word, level):
 
             available_letters[letter] -= 1
             if corpus[new_word_index] == new_word:
-                for i in search(available_letters, complete_words + [new_word], '', level + 1):
+                complete_words += [new_word]
+                for i in search('', level + 1):
                     yield i
-            for i in search(available_letters, complete_words, new_word, level + 1):
+                complete_words.pop()
+            for i in search(new_word, level + 1):
                 yield i
             available_letters[letter] += 1
 
 print 'Looking for anagrams, up to', max_word_count, 'words long...'
 start = time.clock()
 total = 0
-for seq in search(Counter(orig_word), [], '', 0):
+for seq in search('', 0):
     print ' '.join(seq)
     total += 1
 t = time.clock() - start
