@@ -32,7 +32,7 @@ def search(uncomplete_word, level):
         for letter, count in sorted(available_letters.items()):
             if count == 0: continue
             new_word = uncomplete_word + letter
-            if complete_words and new_word < complete_words[-1]: continue
+            if complete_words and new_word < complete_words[-1] and not complete_words[-1].startswith(new_word): continue
             new_word_index = bisect_left(corpus, new_word)
             if new_word_index == len(corpus): continue
             if not corpus[new_word_index].startswith(new_word): continue
